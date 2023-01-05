@@ -1,7 +1,14 @@
 # my-examples-of-solana-javascript
 
+Started Jan 4th, 2023
+
 
 Solana Javascript npm at   https://www.npmjs.com/package/@solana/web3.js
+
+
+my Demos here   https://hpssjellis.github.io/my-examples-of-solana-javascript/public/index.html
+
+
 
 API at  https://solana-labs.github.io/solana-web3.js/
 
