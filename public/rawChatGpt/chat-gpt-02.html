@@ -1,0 +1,73 @@
+import { Connection, Nonce } from '@solana/web3.js';
+
+async function sendTransaction() {
+  // Get the file input element
+  const fileInput = document.getElementById('file-input');
+
+  // Read the file and parse the contents as JSON
+  const file = fileInput.files[0];
+  const fileReader = new FileReader();
+  fileReader.readAsText(file);
+  const data = await new Promise((resolve, reject) => {
+    fileReader.onload = event => {
+      try {
+        resolve(JSON.parse(event.target.result));
+      } catch (e) {
+        reject(e);
+      }
+    };
+  });
+
+  // Extract the private key, from address, and to address from the file
+  const privateKey = data.privateKey;
+  const fromAddress = data.fromAddress;
+  const toAddress = data.toAddress;
+
+  // Replace with the URL of a Solana RPC endpoint
+  const connection = new Connection('https://testnet.solana.com');
+
+  // Get the current nonce (transaction count) for the `fromAddress`
+  const nonce = await connection.getNonce(fromAddress);
+
+  // Create a new transaction
+  const transaction = new Nonce.Transaction({
+    keys: [{
+      pubkey: new Nonce.PublicKey(privateKey),
+      isSigner: true,
+      isWritable: true,
+    }],
+    instructions: [
+      {
+        // Transfer 1 SOL from `fromAddress` to `toAddress`
+        programId: new Nonce.PublicKey('SysvarFeeProgram'),
+        accounts: [
+          {
+            pubkey: new Nonce.PublicKey(fromAddress),
+            isSigner: false,
+            isWritable: false,
+          },
+          {
+            pubkey: new Nonce.PublicKey(toAddress),
+            isSigner: false,
+            isWritable: false,
+          },
+        ],
+        data: new Nonce.ProgramAccountData({
+          lamports: 1,
+          data: new Uint8Array([]),
+        }),
+      },
+    ],
+  });
+
+  // Sign the transaction with the private key
+  transaction.sign(privateKey);
+
+  // Send the transaction to the Solana network
+  const response = await connection.sendTransaction(transaction);
+  console.log(response);
+}
+
+// Add an event listener to the file input element to send the transaction when a file is selected
+const fileInput = document.getElementById('file-input');
+fileInput.addEventListener('change', sendTransaction);
