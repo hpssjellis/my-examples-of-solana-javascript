@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Solana Webapp</title>
+</head>
+<body>
+  <h1>Solana Webapp</h1>
+  <input type="button" id="loadDataButton" value="Load Data" onclick="loadData()" />
+  <input type="button" id="transferButton" value="Transfer Sol" disabled onclick="transferSol()" />
+  <script src="https://unpkg.com/@solana/web3.js@1.73.0/lib/index.iife.js"></script>
+  <script>
+    const myAddress = '';
+    const yourAddress = '';
+    const myPrivateKey = '';
+    const loadDataButton = document.getElementById('loadDataButton');
+    const transferButton = document.getElementById('transferButton');
+
+    function loadData() {
+      // Load data from JSON file
+      const data = loadDataFromJSONFile();
+      myAddress = data.myAddress;
+      yourAddress = data.yourAddress;
+      myPrivateKey = data.myPrivateKey;
+      transferButton.disabled = false;
+    }
+
+    async function transferSol() {
+      const web3 = new Web3();
+      const connection = new web3.providers.HttpProvider(<RPC_URL>);
+      web3.setProvider(connection);
+
+      const amount = 3;
+      const transaction = await web3.transfer(myAddress, yourAddress, amount, myPrivateKey);
+      console.log(transaction);
+    }
+
+    /*
+    function loadDataFromJSONFile() {
+      // Load data from JSON file
+      const data = {};
+      // ...
+      return data;
+    }
+    */
+
+    async function loadDataFromJSONFile() {
+      try {
+        const response = await fetch('path/to/file.json');
+        const data = await response.json();
+        return data;
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  </script>
+</body>
+</html>
